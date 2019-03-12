@@ -23,7 +23,30 @@ var connection = mysql.createConnection({
     console.log("Connected!");
   });
 
-viewSales()
+function start(){
+    inquirer.prompt([
+        {
+            type:'list',
+            name:"action",
+            message:"Welcome to the supervisor console. Would you like to view sales by department, or create a new department?",
+            choices: ['View sales by department', 'Create a department', 'Quit console']
+        }
+    ]).then(function(answer){
+        switch (answer.action){
+            case 'View sales by department':
+            viewSales();
+            break;
+            case 'Create a department':
+            createDepartment();
+            break;
+            case 'Quit console':
+            connection.end();
+        }
+    })
+}
+
+start();
+
 
   function viewSales(){
     connection.query("SELECT departments.department_id, products.department_name, departments.over_head_costs, SUM(products.product_sales) AS department_sales, (SUM(products.product_sales) - departments.over_head_costs) AS total_profit FROM departments LEFT JOIN products ON products.department_name = departments.department_name GROUP BY departments.department_id ORDER BY departments.department_id ASC", function(err,results){
@@ -35,5 +58,39 @@ viewSales()
         }
          let output = table.table(data)
          console.log(output)
-    })
+    });
   }
+
+  function createDepartment(){
+  inquirer.prompt([
+      {
+        type:"input",
+        name:"departmentName",
+        message:"What is the name of the department?"
+      },
+      {
+        type:"input",
+        name:"overhead",
+        message:"What are the total overhead costs of the department?",
+        validate: function(value) {
+            if (isNaN(value)) {
+              return false;
+            } else {
+              return true;
+            }
+          }
+      }  
+  ]).then(function(answers){
+    connection.query(
+        "INSERT INTO departments (department_name, over_head_costs) VALUES (?,?)",
+        [answers.departmentName, answers.overhead],
+        function(err) {
+          if (err) throw err;
+          console.log(`
+Success! You created the department ${answers.departmentName} with total overhead costs of ${answers.overhead}
+`);
+        }
+      )
+      start();
+  })
+}
