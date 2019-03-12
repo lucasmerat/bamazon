@@ -26,12 +26,12 @@ var connection = mysql.createConnection({
 viewSales()
 
   function viewSales(){
-    connection.query('SELECT department_name, sum(product_sales) AS sales FROM products GROUP BY department_name', function(err,results){
+    connection.query("SELECT departments.department_id, products.department_name, departments.over_head_costs, SUM(products.product_sales) AS department_sales, (SUM(products.product_sales) - departments.over_head_costs) AS total_profit FROM departments LEFT JOIN products ON products.department_name = departments.department_name GROUP BY departments.department_id ORDER BY departments.department_id ASC", function(err,results){
         if (err) throw err;
-        console.log(results)
-        let data = [['department_name','product_sales']]
-         for(let i=0;i<results.length;i++){
-            data.push([results[i].department_name, results[i].sales])
+        // console.log(results)
+        let data = [['Department ID','Department Name', 'Department Overhead Costs', 'Product Sales', 'Total Profit']]
+        for(let i=0;i<results.length;i++){
+            data.push([results[i].department_id, results[i].department_name, results[i].over_head_costs, results[i].department_sales, results[i].total_profit])
         }
          let output = table.table(data)
          console.log(output)

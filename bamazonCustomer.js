@@ -16,11 +16,11 @@ var connection = mysql.createConnection({
   });
   
   // connect to the mysql server and sql database
-  connection.connect(function(err) {
-    if (err) throw err;
-    // run the start function after the connection is made to prompt the user
-    console.log("Connected!")
-  })
+  // connection.connect(function(err) {
+  //   if (err) throw err;
+  //   // run the start function after the connection is made to prompt the user
+  //   console.log("Connected!")
+  // })
 
   function readItems() {
     connection.query("select * from products", function(err, results) {
@@ -71,10 +71,10 @@ Price: $${results[i].price}
             let previousSales = results[0].product_sales;
             updateDatabase(newQuantity, pricePaid, previousSales, id)
             console.log(`Success, you purchased ${orderQuantity} items for $${pricePaid}`)
-            connection.end();
+            // connection.end();
         } else {
           console.log('Insufficient quantity of product, please try again')
-          connection.end();
+          // connection.end();
         }
     })
   })
