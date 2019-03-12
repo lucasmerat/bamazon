@@ -22,8 +22,6 @@ var connection = mysql.createConnection({
     console.log("Connected!")
   })
 
-  checkQuantity(2)
-
   function readItems() {
     connection.query("select * from products", function(err, results) {
       if (err) throw err;
@@ -41,29 +39,57 @@ Price: $${results[i].price}
       console.log("Above are all available items. Please enter the ID number of the item you would like to bid on")
     });
   }
+  
+  function checkQuantity(id, orderQuantity){
+    console.log("the id is " + id)
+  
+}
 
   readItems();
 
-//   inquirer.prompt([
-//       {
-//         type:"input",
-//         name:"item",
-//         message:"Type the ID of the item you would like to bid on"
-//       },
-//       {
-//         type:"input",
-//         name:"quantity",
-//         message:"How many units of the product do you want to purchase?"
-//       }
-//   ]).then(function(answers){
-//       console.log(answers)
-        
-//   })
-
-  function checkQuantity(id){
-    connection.query("select stock_quantity from products where item_id = ?", id, function(err, results){
+  inquirer.prompt([
+      {
+        type:"input",
+        name:"item",
+        message:"Type the ID of the item you would like to bid on"
+      },
+      {
+        type:"input",
+        name:"quantity",
+        message:"How many units of the product do you want to purchase?"
+      }
+  ]).then(function(order){
+      let orderQuantity = parseInt(order.quantity);
+      let id = Number(order.item);
+      connection.query("SELECT stock_quantity, price FROM products WHERE item_id = ?", id, function(err, results){
         if(err) throw err;
-        console.log(typeof results[0].stock_quantity)
+        console.log(results)
+        let price = results[0].price
+        if (results[0].stock_quantity > orderQuantity){
+            let newQuantity = results[0].stock_quantity - orderQuantity
+            updateDatabase(newQuantity, price, id)
+            let pricePaid = orderQuantity * price;
+            console.log(`Success, you purchased ${orderQuantity} items for $${pricePaid}`)
+        } else {
+          console.log('Insufficient quantity of product, please try again')
+          connection.end();
+        }
     })
-  }
+  })
 
+  function updateDatabase(newQuantity, price, id){
+    connection.query(
+        "UPDATE products SET ? WHERE ?",
+        [
+          {
+            stock_quantity: newQuantity
+          },
+          {
+            item_id: id
+          }
+        ],
+        function(err) {
+          if (err) throw err;
+        }
+      );
+  }
