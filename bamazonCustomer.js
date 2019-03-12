@@ -70,6 +70,7 @@ Price: $${results[i].price}
             updateDatabase(newQuantity, price, id)
             let pricePaid = orderQuantity * price;
             console.log(`Success, you purchased ${orderQuantity} items for $${pricePaid}`)
+            connection.end();
         } else {
           console.log('Insufficient quantity of product, please try again')
           connection.end();
