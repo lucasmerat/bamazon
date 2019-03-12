@@ -51,7 +51,7 @@ Price: $${results[i].price}
       {
         type:"input",
         name:"item",
-        message:"Type the ID of the item you would like to bid on"
+        message:"Type the ID of the item you would like to buy"
       },
       {
         type:"input",
@@ -61,14 +61,15 @@ Price: $${results[i].price}
   ]).then(function(order){
       let orderQuantity = parseInt(order.quantity);
       let id = Number(order.item);
-      connection.query("SELECT stock_quantity, price FROM products WHERE item_id = ?", id, function(err, results){
+      connection.query("SELECT stock_quantity, product_sales, price FROM products WHERE item_id = ?", id, function(err, results){
         if(err) throw err;
-        console.log(results)
         let price = results[0].price
+        console.log(price)
         if (results[0].stock_quantity > orderQuantity){
             let newQuantity = results[0].stock_quantity - orderQuantity
-            updateDatabase(newQuantity, price, id)
             let pricePaid = orderQuantity * price;
+            let previousSales = results[0].product_sales;
+            updateDatabase(newQuantity, pricePaid, previousSales, id)
             console.log(`Success, you purchased ${orderQuantity} items for $${pricePaid}`)
             connection.end();
         } else {
@@ -78,12 +79,15 @@ Price: $${results[i].price}
     })
   })
 
-  function updateDatabase(newQuantity, price, id){
+  function updateDatabase(newQuantity, pricePaid, previousSales, id){
+    let newSales = previousSales + pricePaid;
+    console.log(newSales)
     connection.query(
         "UPDATE products SET ? WHERE ?",
         [
           {
-            stock_quantity: newQuantity
+            stock_quantity: newQuantity,
+            product_sales: newSales
           },
           {
             item_id: id

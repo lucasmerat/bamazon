@@ -4,17 +4,17 @@
 
 use bamazon;
 
--- create table products (
--- 	item_id int NOT NULL auto_increment,
---     primary key(item_id),
---     product_name VARCHAR(100) NOT NULL,
--- 	department_name VARCHAR(100) NOT NULL,
---     price decimal(7,2) NOT NULL,
---     stock_quantity int(10) NOT NULL
+ALTER TABLE products ADD product_sales int(11);
+
+-- create table departments (
+-- 	department_id int NOT NULL auto_increment,
+--     primary key(department_id),
+--     department_name VARCHAR(100) NOT NULL,
+-- 	over_head_costs int(11) NOT NULL
 -- );
 
 -- INSERT INTO products (product_name, department_name, price, stock_quantity)
--- VALUES ('Cheese Grater', 'Kitchen', 8.99, 124);
+-- VALUES ('Cereal', 'Food', 4, 1000);
 
 select * from products;
 
