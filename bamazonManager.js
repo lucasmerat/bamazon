@@ -36,6 +36,7 @@ function viewProducts() {
   -------------
         `);
     }
+    console.log("What would you like to do next? Use the arrow keys to navigate")
   });
 }
 
@@ -54,12 +55,12 @@ Price: $${results[i].price}
 Quantity: ${results[i].stock_quantity}
 -------------
 `);
-        connection.end();
-      }
+        start();
+}
     }
     if (!anyLow) {
       console.log("There are no items with low inventory!");
-      connection.end();
+      start();
     }
   });
 }
@@ -85,22 +86,74 @@ function addToInventory() {
           function(err, results) {
               if(err) throw err;
               console.log(`Successfully added ${answer.amount} to item number ${answer.item}`)
-              connection.end()
+              start();
           }
         );
       });
   }
 
 function newProduct(product, department, itemPrice, stock) {
-  connection.query(
-    "INSERT INTO products (product_name, department_name, price, stock_quantity) VALUES (?,?,?,?)",
-    [product, department, itemPrice, stock],
-    function(err) {
-      if (err) throw err;
-    }
-  );
+  inquirer.prompt([
+      {
+        type: "input",
+        name: "product",
+        message: "What is name of the product you are adding?"
+      },
+      {
+        type: "list",
+        name: "department",
+        message:
+        "Choose a department category for the product.",
+        choices: [
+        "Kitchen",
+        "Clothing",
+        "Electronics",
+        "Outdoor",
+        "Food"
+        ]
+      },
+      {
+        type: "input",
+        name: "price",
+        message: "Please set a price for the item you are adding",
+        validate: function(value){
+            if(isNaN(value)){
+                return false;
+            } else {
+                return true;
+            }
+        }
+      },
+      {
+        type: "input",
+        name: "stock",
+        message: "Please set a starting quantity for the product",
+        validate: function(value){
+            if(isNaN(value)){
+                return false;
+            } else {
+                return true;
+            }
+        }
+      }     
+  ]).then(function(answers){
+    connection.query(
+        "INSERT INTO products (product_name, department_name, price, stock_quantity) VALUES (?,?,?,?)",
+        [answers.product, answers.department, answers.price, answers.stock],
+        function(err) {
+          if (err) throw err;
+          console.log(`
+Success! You added ${answers.stock} of the item ${answers.product} in the ${answers.department} department at a price of $${answers.price}
+`)
+start();
+        }
+      );
+  })
 }
 
+start();
+
+function start(){
 inquirer
   .prompt([
     {
@@ -112,7 +165,8 @@ inquirer
         "View all products",
         "View low inventory",
         "Increase quantity of an item",
-        "Add an item to the store"
+        "Add an item to the store",
+        "Quit console"
       ]
     }
   ])
@@ -120,12 +174,21 @@ inquirer
     switch (choice.command) {
       case "View all products":
         viewProducts();
-        connection.end();
+        start();
+        break;
       case "View low inventory":
         viewLowInventory();
+        break;
       case "Increase quantity of an item":
         addToInventory();
+        break;
+      case "Add an item to the store":
+        newProduct();
+        break;
+      case "Quit console":
+        connection.end();
+        break;
     }
   });
 
-
+}
