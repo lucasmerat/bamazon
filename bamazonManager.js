@@ -85,12 +85,26 @@ function addToInventory() {
       {
         type: "input",
         name: "item",
-        message: "What is the ID of the item you want to add to?"
+        message: "What is the ID of the item you want to add to?",
+        validate: function(value) {
+            if (isNaN(value)) {
+              return false;
+            } else {
+              return true;
+            }
+          }
       },
       {
         type: "input",
         name: "amount",
-        message: "How much would you like to add to the item's quantity?"
+        message: "How much would you like to add to the item's quantity?",
+        validate: function(value) {
+            if (isNaN(value)) {
+              return false;
+            } else {
+              return true;
+            }
+          }
       }
     ])
     .then(function(answer) {
@@ -129,7 +143,9 @@ function newProduct(product, department, itemPrice, stock) {
         name: "price",
         message: "Please set a price for the item you are adding",
         validate: function(value) {
-          if (isNaN(value)) {
+        let regEx = /\$/g
+          if (isNaN(value) || regEx.test(value)) {
+              console.log(" Incorrect input! Make sure you are only entering a number. No dollar signs!")
             return false;
           } else {
             return true;
