@@ -39,8 +39,11 @@ function viewProducts() {
     let output = table.table(data);
     console.log(output);
     console.log(
-      "What would you like to do next? Use the arrow keys to navigate"
-    );
+        `
+  All available products are listed above. What would you like to do next?
+  `
+      );
+    start();
   });
 }
 
@@ -58,13 +61,19 @@ function viewLowInventory() {
           results[i].stock_quantity
         ]);
         let output = table.table(data);
-        console.log("The following items are low in quantity");
         console.log(output);
+        console.log(
+            `
+All products with low stock are listed above. What would you like to do next?
+      `
+          );
         start();
       }
     }
     if (!anyLow) {
-      console.log("There are no items with low inventory!");
+      console.log(`
+There are no items with low inventory!
+      `);
       start();
     }
   });
@@ -91,7 +100,9 @@ function addToInventory() {
         function(err, results) {
           if (err) throw err;
           console.log(
-            `Successfully added ${answer.amount} to item number ${answer.item}`
+            `
+Successfully added ${answer.amount} to item number ${answer.item}
+`
           );
           start();
         }
@@ -111,7 +122,7 @@ function newProduct(product, department, itemPrice, stock) {
         type: "list",
         name: "department",
         message: "Choose a department category for the product.",
-        choices: ["Kitchen", "Clothing", "Electronics", "Outdoor", "Food"]
+        choices: ["Kitchen", "Clothing", "Electronics", "Outdoor", "Food", "Doors", "Music"]
       },
       {
         type: "input",
@@ -178,7 +189,6 @@ function start() {
       switch (choice.command) {
         case "View all products":
           viewProducts();
-          start();
           break;
         case "View low inventory":
           viewLowInventory();

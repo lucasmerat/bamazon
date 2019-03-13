@@ -81,7 +81,9 @@ function start() {
             let previousSales = results[0].product_sales;
             updateDatabase(newQuantity, pricePaid, previousSales, id);
             console.log(
-              `Success, you purchased ${orderQuantity} items for $${pricePaid}`
+              `
+Success, you purchased ${orderQuantity} items for $${pricePaid}
+              `
             );
             inquirer
               .prompt([
