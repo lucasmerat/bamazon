@@ -4,6 +4,9 @@
 
 A CLI application that connects with a MySQL database to create a 3-view storefront. The application has a customer view, to purchase product, a manager view to check inventory and update stock, and a supervisor view to analyze departmental-level sales and metrics. This was created for week 11 of UT Austin coding bootcamp. 
 
+## Video Demo
+A brief demo of the functionality of the app can be found [here](https://youtu.be/-ukabNI3PRw).
+
 ## Technologies used
 - [Inquirer](https://www.npmjs.com/package/inquirer)
 - [mysql](https://www.npmjs.com/package/mysql)
